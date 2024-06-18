@@ -11,7 +11,7 @@ class Pokemon:
     def __init__(self, pokemon_trainer):
         self.pokemon_trainer = pokemon_trainer
         self.pokemon_number = randint(1, 1000)
-        self.name, self.img, self.abilities, self.level, self.health = self.get_pokemon_data()
+        self.name, self.img, self.abilities, self.level, self.height, self.health = self.get_pokemon_data()
         Pokemon.pokemons[pokemon_trainer] = self
 
     def get_pokemon_data(self):
@@ -22,14 +22,15 @@ class Pokemon:
             name = data['forms'][0]['name']
             img = data['sprites']['front_default']
             abilities = [ability['ability']['name'] for ability in data['abilities']]
-            level = randint(1, 100)
+            level = data['base_experience']
+            height = data["height"]
             health = randint(50, 100)
-            return name, img, abilities, level, health
+            return name, img, abilities, level, height, health
         else:
-            return "Pikachu", "https://via.placeholder.com/150", [], 1, 100
+            return "Pikachu", "https://via.placeholder.com/150", [], 1, 0, 100
 
     def info(self):
-        return f"Имя твоего покемона: {self.name}, Уровень: {self.level}, Здоровье: {self.health}, Способности: {', '.join(self.abilities)}"
+        return f"Имя твоего покемона: {self.name}, базовый опыт: {self.level}, высота: {self.height}, Способности: {', '.join(self.abilities)}"
 
     def show_img(self):
         return self.img
@@ -44,5 +45,7 @@ def go(message):
         bot.reply_to(message, "Ты уже создал себе покемона")
 
 bot.infinity_polling(none_stop=True)
+
+
 
 
