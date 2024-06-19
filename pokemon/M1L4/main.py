@@ -30,7 +30,7 @@ class Pokemon:
             return "Pikachu", "https://via.placeholder.com/150", [], 1, 0, 100
 
     def info(self):
-        return f"Имя твоего покемона: {self.name}, базовый опыт: {self.level}, высота: {self.height}, Способности: {', '.join(self.abilities)}"
+        return f"Имя твоего покемона: {self.name},  Здоровье: {self.health} , базовый опыт: {self.level}, высота: {self.height}, Способности: {', '.join(self.abilities) }"
 
     def show_img(self):
         return self.img
@@ -45,7 +45,5 @@ def go(message):
         bot.reply_to(message, "Ты уже создал себе покемона")
 
 bot.infinity_polling(none_stop=True)
-
-
 
 
