@@ -4,7 +4,6 @@ import telebot
 from config import token
 import time
 
-
 class Pokemon:
     pokemons = {}
     cooldown_time = 1800
