@@ -5,54 +5,15 @@ from config import token
 from logic import Pokemon , Wizerd , Boez
 bot = telebot.TeleBot(token)
 
+trainers = {}
 
-
-bot.message_handler(commands=['go'])
-def go(message):
-    if message.from_user.username in trainers:
-        trainer = trainers[message.from_user.username]
-        pokemon_type = randint(0, 1)
-        if pokemon_type == 0:
-            pokemon = Wizerd(message.from_user.username)
-        else:
-            pokemon = Boez(message.from_user.username)
-        trainer.add_pokemon(pokemon)
-        bot.send_message(message.chat.id, pokemon.info())
-        bot.send_photo(message.chat.id, pokemon.show_img())
-        bot.reply_to(message, f"Поздравляю, ты поймал {pokemon.name}!")
+@bot.message_handler(commands=['start'])
+def start(message):
+    if message.from_user.username not in trainers:
+        trainers[message.from_user.username] = Trainer(message.from_user.username)
+        bot.reply_to(message, "Добро пожаловать в мир покемонов! Используй /go чтобы создать своего первого покемона.")
     else:
-        bot.reply_to(message, "Сначала начни игру, используя /start")
-
-@bot.message_handler(commands=['fight'])
-def fight(message):
-    if message.from_user.username in Pokemon.pokemons.keys():
-        my_pokemon = Pokemon.pokemons[message.from_user.username]
-        opponent_username = message.text.split('@')[1].strip()
-        if opponent_username in Pokemon.pokemons.keys():
-            opponent_pokemon = Pokemon.pokemons[opponent_username]
-            my_damage = my_pokemon.attack(opponent_pokemon)
-
-            if my_pokemon.heal():
-                bot.reply_to(message, f"{my_pokemon.name} вылечился до максимального здоровья!")
-
-            bot.reply_to(message, f"{my_pokemon.name} атаковал {opponent_pokemon.name} и нанес {my_damage} урона.")
-            if opponent_pokemon.health <= 0:
-                bot.reply_to(message, f"{opponent_pokemon.name} был побежден!")
-        else:
-            bot.reply_to(message, "У этого пользователя нет покемона.")
-    else:
-        bot.reply_to(message, "Сначала создай покемона!")
-
-@bot.message_handler(commands=['heal'])
-def heal(message):
-    if message.from_user.username in Pokemon.pokemons.keys():
-        my_pokemon = Pokemon.pokemons[message.from_user.username]
-        if my_pokemon.heal():
-            bot.reply_to(message, f"{my_pokemon.name} вылечился до максимального здоровья!")
-        else:
-            bot.reply_to(message, f"{my_pokemon.name} не может лечиться так часто.")
-    else:
-        bot.reply_to(message, "Сначала создай покемона!")
+        bot.reply_to(message, "Ты уже в игре!")
 
 class Trainer:
     def __init__(self, username):
@@ -73,16 +34,6 @@ class Trainer:
 
     def get_current_pokemon(self):
         return self.current_pokemon
-
-trainers = {}
-
-@bot.message_handler(commands=['start'])
-def start(message):
-    if message.from_user.username not in trainers:
-        trainers[message.from_user.username] = Trainer(message.from_user.username)
-        bot.reply_to(message, "Добро пожаловать в мир покемонов! Используй /go чтобы создать своего первого покемона.")
-    else:
-        bot.reply_to(message, "Ты уже в игре!")
 
 @bot.message_handler(commands=['go'])
 def go(message):
@@ -136,7 +87,7 @@ def fight(message):
                 if my_pokemon.heal():
                     bot.reply_to(message, f"{my_pokemon.name} вылечился до максимального здоровья!")
 
-                bot.reply_to(message, f"{my_pokemon.name} атаковал {opponent_pokemon.name} и нанес {my_damage} урона.")
+                bot.reply_to(message, f"{my_pokemon.name} атаковал {opponent_pokemon.name} и нанес {my_damage} урона. У {opponent_pokemon.name} осталось {opponent_pokemon.health} ХП.")
                 if opponent_pokemon.health <= 0:
                     bot.reply_to(message, f"{opponent_pokemon.name} был побежден!")
             else:
@@ -145,5 +96,7 @@ def fight(message):
             bot.reply_to(message, "Неверный формат команды. Используйте /fight @[username].")
     else:
         bot.reply_to(message, "Сначала создай покемона!")
+
+bot.polling()
 
 bot.polling()
