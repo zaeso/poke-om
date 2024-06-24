@@ -99,4 +99,3 @@ def fight(message):
 
 bot.polling()
 
-bot.polling()
